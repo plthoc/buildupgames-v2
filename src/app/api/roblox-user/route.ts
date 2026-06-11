@@ -75,7 +75,7 @@ async function fetchAll(userIds: number[]): Promise<UserInfo[]> {
   }
 
   // Step 2: avatar thumbnails (batch)
-  let avatarMap = new Map<number, string>();
+  const avatarMap = new Map<number, string>();
   try {
     const url = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userIds.join(",")}&size=420x420&format=Png&isCircular=false`;
     const r = await fetch(url, {

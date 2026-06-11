@@ -17,8 +17,10 @@ type RobloxUser = {
 // Discord server ID — set this in .env.local as NEXT_PUBLIC_DISCORD_SERVER_ID
 // Required for the Discord widget popover to work. Without it the icon falls back
 // to opening the invite link in a new tab.
-const DISCORD_SERVER_ID = process.env.NEXT_PUBLIC_DISCORD_SERVER_ID ?? "";
-const DISCORD_INVITE = "https://discord.gg/buildup";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const DISCORD_SERVER_ID: string = process.env.NEXT_PUBLIC_DISCORD_SERVER_ID ?? "";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const DISCORD_INVITE: string = "https://discord.gg/buildup";
 
 export function Team() {
   return (
