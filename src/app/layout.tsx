@@ -33,7 +33,7 @@ const mono = Fragment_Mono({
   weight: ["400"],
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buildupgames.com";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buildupgames.cc";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
