@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     title: "BuildUp Games — Building games worth playing",
     description:
       "We develop, scale, and acquire Roblox experiences that keep players coming back.",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "BuildUp Games — Building games worth playing" }],
+    images: [{ url: "/og.png", width: 600, height: 600, alt: "BuildUp Games — Building games worth playing" }],
   },
   twitter: {
     card: "summary_large_image",
