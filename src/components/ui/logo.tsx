@@ -21,7 +21,7 @@ export function Logo({
     <Image
       src="/logo.png"
       alt="BuildUp"
-      width={height * (658 / 345)}
+      width={height * (226 / 122)}
       height={height}
       className={className}
       style={{ height, width: "auto", display: "block" }}
