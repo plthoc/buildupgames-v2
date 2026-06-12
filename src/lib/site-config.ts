@@ -99,7 +99,7 @@ export const siteConfig = {
     eyebrow: "Get in touch",
     title: "Bring BuildUp the next Roblox hit.",
     body: "Interested in working with us? We'd love to hear from you. Reach out for publishing, live operations, creator collaboration, or development support.",
-    email: "contact@buildupgames.org",
+    email: "buildupsupport@gmail.com",
     options: [
       {
         tag: "Pitch",

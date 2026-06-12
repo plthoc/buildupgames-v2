@@ -61,7 +61,7 @@ export async function POST(req: Request) {
 
   const { name, email, message, topic } = parsed.data;
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_TO_EMAIL ?? "contact@buildupgames.org";
+  const to = process.env.CONTACT_TO_EMAIL ?? "buildupsupport@gmail.com";
   const from = process.env.CONTACT_FROM_EMAIL ?? "BuildUp Games <noreply@buildupgames.com>";
 
   // If Resend isn't configured, log and return success in dev (so the form still works locally)

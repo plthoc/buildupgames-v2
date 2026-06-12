@@ -7,7 +7,7 @@ import { Reveal } from "@/components/ui/motion-primitives";
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#5865F2] text-white">
+    <footer className="relative overflow-hidden bg-[#19236a] text-white">
       <div className="container-x py-20 md:py-28">
         <Reveal>
           <div className="flex flex-col items-start gap-10 md:flex-row md:items-end md:justify-between">

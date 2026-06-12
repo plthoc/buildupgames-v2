@@ -49,7 +49,7 @@ export function Team() {
           <RevealItem>
             <a
               href="#contact"
-              className="group block w-full rounded-4xl border border-dashed border-line bg-white px-10 py-8 transition-colors hover:border-ink-300 focus-ring sm:px-12"
+              className="group block w-full rounded-4xl border border-dashed border-line bg-white px-5 py-7 transition-colors hover:border-ink-300 focus-ring sm:px-10 sm:py-8 md:px-12"
             >
               <div className="flex items-start justify-between gap-8">
                 <div className="flex items-start gap-5">
@@ -109,10 +109,10 @@ function MemberCard({
     live?.name && live.name.length > 0 ? `@${live.name}` : handle;
 
   return (
-    <div className="block w-full rounded-4xl border border-line bg-white px-10 py-8 sm:px-12">
-      <div className="flex items-start justify-between gap-8">
-        <div className="flex items-start gap-5">
-          <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full bg-surface-50">
+    <div className="block w-full rounded-4xl border border-line bg-white px-5 py-7 sm:px-10 sm:py-8 md:px-12">
+      <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-start sm:justify-between sm:gap-8">
+        <div className="flex items-start gap-4 sm:gap-5">
+          <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full bg-surface-50 sm:h-16 sm:w-16">
             <Image
               src={avatarUrl}
               alt={live?.displayName || name}
@@ -142,7 +142,7 @@ function MemberCard({
                       type="button"
                       onClick={() => setDiscordOpen(true)}
                       aria-label={`Open Discord for ${discordUsername ?? name}`}
-                      className="inline-flex items-center justify-center text-[#5865F2] transition-colors hover:brightness-90"
+                      className="inline-flex items-center justify-center text-[#19236a] transition-colors hover:brightness-90"
                     >
                       <TeamIcon type="discord" />
                     </button>
@@ -248,7 +248,7 @@ function DiscordPopover({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-col items-center text-center gap-3">
-          <div className="h-12 w-12 rounded-full bg-[#5865F2]/10 grid place-items-center text-[#5865F2]">
+          <div className="h-12 w-12 rounded-full bg-[#19236a]/10 grid place-items-center text-[#19236a]">
             <TeamIcon type="discord" sizeClass="h-6 w-6" />
           </div>
           <div>
