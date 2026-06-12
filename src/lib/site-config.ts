@@ -74,7 +74,7 @@ export const siteConfig = {
         quote: "We started BuildUp to give Roblox studios the support we always wished we had — strong creative direction, live ops that actually move the needle, and a team that cares about the long game.",
         img: "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-7E144DA4A088DD490E99731B6E8AB554-Png/420/420/AvatarHeadshot/Png/noFilter",
         robloxUserId: 2929716136,
-        discordUsername: "ows6",
+        discordUsername: "dan540",
         links: [
           { type: "discord" as const, href: "https://discord.gg/buildup", label: "Discord" },
           { type: "roblox" as const, href: "https://www.roblox.com/users/2929716136/profile", label: "Roblox Profile" },
