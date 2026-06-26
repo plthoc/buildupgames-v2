@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
+import { siteConfig } from "@/lib/site-config";
 
 const navItems = [
   { label: "About", href: "#about" },
@@ -54,7 +55,7 @@ export function Navbar() {
         <div className="pointer-events-auto flex items-center gap-2">
           {/* Discord CTA — desktop only */}
           <motion.a
-            href="https://discord.gg/buildup"
+            href={siteConfig.social.discord}
             target="_blank"
             rel="noopener noreferrer"
             className="group hidden md:inline-flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 transition-all hover:shadow-lg hover:shadow-blue-500/40"
@@ -136,7 +137,7 @@ export function Navbar() {
                   className="mt-2 border-t border-white/10 pt-3"
                 >
                   <a
-                    href="https://discord.gg/buildup"
+                    href={siteConfig.social.discord}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => setOpen(false)}

@@ -76,7 +76,7 @@ export const siteConfig = {
         robloxUserId: 2929716136,
         discordUsername: "dan540",
         links: [
-          { type: "discord" as const, href: "https://discord.gg/buildup", label: "Discord" },
+          { type: "discord" as const, href: "https://discord.gg/p5wrWcsmHN", label: "Discord" },
           { type: "roblox" as const, href: "https://www.roblox.com/users/2929716136/profile", label: "Roblox Profile" },
         ] as TeamLink[],
       } as TeamMember,
@@ -89,7 +89,7 @@ export const siteConfig = {
         robloxUserId: 5785246980,
         discordUsername: "shaydevs",
         links: [
-          { type: "discord" as const, href: "https://discord.gg/buildup", label: "Discord" },
+          { type: "discord" as const, href: "https://discord.gg/p5wrWcsmHN", label: "Discord" },
           { type: "roblox" as const, href: "https://www.roblox.com/users/5785246980/profile", label: "Roblox Profile" },
         ] as TeamLink[],
       } as TeamMember,
@@ -131,7 +131,7 @@ export const siteConfig = {
   social: {
     roblox: "https://www.roblox.com/groups/buildup",
     twitter: "https://twitter.com/buildupgames",
-    discord: "https://discord.gg/buildup",
+    discord: "https://discord.gg/p5wrWcsmHN",
   },
 };
 

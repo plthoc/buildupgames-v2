@@ -20,7 +20,7 @@ type RobloxUser = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DISCORD_SERVER_ID: string = process.env.NEXT_PUBLIC_DISCORD_SERVER_ID ?? "";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DISCORD_INVITE: string = "https://discord.gg/buildup";
+const DISCORD_INVITE: string = siteConfig.social.discord;
 
 export function Team() {
   return (
