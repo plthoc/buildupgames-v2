@@ -1,11 +1,14 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Twitter, MessageCircle, Globe } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { siteConfig } from "@/lib/site-config";
+import { resolveNavHref } from "@/lib/utils";
 import { Reveal } from "@/components/ui/motion-primitives";
 
 export function Footer() {
+  const pathname = usePathname() ?? "/";
   return (
     <footer className="relative overflow-hidden bg-[#19236a] text-white">
       <div className="container-x py-20 md:py-28">
@@ -49,7 +52,7 @@ export function Footer() {
               {siteConfig.nav.map((item) => (
                 <li key={item.href}>
                   <a
-                    href={item.href}
+                    href={resolveNavHref(item.href, pathname)}
                     className="text-white/70 transition-colors hover:text-white"
                   >
                     {item.label}

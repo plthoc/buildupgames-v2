@@ -12,3 +12,16 @@ export function formatNumber(n: number | string | null | undefined) {
   if (num >= 1_000) return (num / 1_000).toFixed(1).replace(/\.0$/, "") + "K";
   return num.toLocaleString();
 }
+
+/**
+ * Resolve a nav href for the current page.
+ * - On the home page (`/`), in-page anchors (#about) work natively and get
+ *   smoothly scrolled by the SmoothScroll provider.
+ * - On any other page, an in-page anchor must be turned into a full path
+ *   (e.g. `/#about`) so the browser loads home first and then jumps to
+ *   the section.
+ */
+export function resolveNavHref(href: string, pathname: string): string {
+  if (!href.startsWith("#")) return href;
+  return pathname === "/" ? href : `/${href}`;
+}
