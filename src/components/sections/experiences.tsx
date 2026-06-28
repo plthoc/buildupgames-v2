@@ -1,40 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/motion-primitives";
-import { formatNumber } from "@/lib/utils";
-
-type GameStats = {
-  playing: number;
-  visits: number;
-  name: string;
-  favoritedCount: number;
-  thumbnail: string;
-  updatedAt: number;
-};
+import { GamesGrid } from "@/components/sections/games-grid";
 
 export function Experiences() {
-  const [statsById, setStatsById] = useState<Record<number, GameStats>>({});
-
-  // Poll every 30s for live updates (title, thumbnail, stats all update)
-  useEffect(() => {
-    let alive = true;
-    const poll = () => {
-      fetch("/api/roblox-stats")
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data) => {
-          if (alive && data?.byGame) setStatsById(data.byGame);
-        })
-        .catch(() => {});
-    };
-    poll(); // immediate first fetch
-    const interval = setInterval(poll, 30000);
-    return () => { alive = false; clearInterval(interval); };
-  }, []);
+  const hasGames = siteConfig.games.length > 0;
 
   return (
     <section
@@ -56,26 +29,25 @@ export function Experiences() {
           </p>
         </Reveal>
 
-        <RevealStagger className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {siteConfig.games.length > 0 ? (
-            siteConfig.games.map((game) => {
-              const s = statsById[game.placeId];
-              return (
-                <RevealItem key={game.placeId}>
-                  <GameCard
-                    name={s?.name ?? game.name}
-                    studio={game.studio}
-                    img={s?.thumbnail ?? game.img}
-                    url={game.url}
-                    playing={s?.playing ?? 0}
-                    visits={s?.visits ?? 0}
-                  />
-                </RevealItem>
-              );
-            })
-          ) : (
+        {hasGames ? (
+          <div className="mt-16">
+            <GamesGrid limit={3} />
+            <Reveal>
+              <div className="mt-10 flex justify-center">
+                <a
+                  href="/games"
+                  className="group inline-flex items-center gap-2 rounded-full border border-line bg-white px-6 py-3 text-sm font-medium text-ink-900 transition-all hover:border-ink-300 hover:shadow-card focus-ring"
+                >
+                  View all games
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </a>
+              </div>
+            </Reveal>
+          </div>
+        ) : (
+          <RevealStagger className="mt-16">
             <RevealItem>
-              <div className="group flex h-full min-h-[420px] flex-col items-center justify-center rounded-4xl border border-line bg-white p-8 text-center">
+              <div className="flex min-h-[420px] flex-col items-center justify-center rounded-4xl border border-line bg-white p-8 text-center">
                 <div className="mb-5 grid h-14 w-14 place-items-center rounded-full bg-ink-900 text-white">
                   <ArrowUpRight className="h-5 w-5" />
                 </div>
@@ -87,77 +59,29 @@ export function Experiences() {
                 </p>
               </div>
             </RevealItem>
-          )}
+          </RevealStagger>
+        )}
 
-          {/* "Coming soon" card — invites pitches */}
-          <RevealItem>
-            <a
-              href="#contact"
-              className="group flex h-full min-h-[420px] flex-col items-center justify-center rounded-4xl border border-dashed border-line bg-surface-50 p-8 text-center transition-colors hover:border-ink-300 hover:bg-white focus-ring"
-            >
-              <div className="mb-5 grid h-14 w-14 place-items-center rounded-full bg-ink-900 text-white">
-                <ArrowUpRight className="h-5 w-5" />
-              </div>
-              <h3 className="font-display text-xl font-medium text-ink-900">
-                Pitch your experience
-              </h3>
-              <p className="mt-2 max-w-xs text-sm text-ink-500">
-                Always looking for the next hit. If you&apos;re building
-                something players will love, we want to hear about it.
-              </p>
-            </a>
-          </RevealItem>
-        </RevealStagger>
+        {/* "Pitch your experience" — always present, sits below the grid */}
+        <Reveal>
+          <motion.a
+            href="#contact"
+            whileHover={{ y: -4 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-6 group flex min-h-[220px] flex-col items-center justify-center rounded-2xl border border-dashed border-line bg-surface-50 p-8 text-center transition-colors hover:border-ink-300 hover:bg-white focus-ring"
+          >
+            <div className="mb-4 grid h-12 w-12 place-items-center rounded-full bg-ink-900 text-white">
+              <ArrowUpRight className="h-5 w-5" />
+            </div>
+            <h3 className="font-display text-xl font-medium text-ink-900">
+              Pitch your experience
+            </h3>
+            <p className="mt-2 max-w-md text-sm text-ink-500">
+              Always looking for the next hit. If you&apos;re building something players will love, we want to hear about it.
+            </p>
+          </motion.a>
+        </Reveal>
       </div>
     </section>
-  );
-}
-
-function GameCard({
-  name,
-  studio,
-  img,
-  url,
-  playing,
-  visits,
-}: {
-  name: string;
-  studio: string;
-  img: string;
-  url: string;
-  playing: number;
-  visits: number;
-}) {
-  return (
-    <motion.a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="group block overflow-hidden rounded-4xl border border-line bg-white transition-shadow hover:shadow-card focus-ring"
-    >
-      <div className="relative aspect-[5/4] overflow-hidden bg-surface-50">
-        <Image
-          src={img}
-          alt={name}
-          fill
-          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-        />
-      </div>
-      <div className="p-6">
-        <h3 className="font-display text-xl font-medium text-ink-900">{name}</h3>
-        <p className="mt-1 text-sm text-ink-500">By {studio}</p>
-        <div className="mt-5 flex items-center justify-between border-t border-line pt-4 text-xs text-ink-500">
-          <span>
-            <span className="font-medium text-ink-900">{formatNumber(playing)}</span> playing
-          </span>
-          <span>
-            <span className="font-medium text-ink-900">{formatNumber(visits)}</span> visits
-          </span>
-        </div>
-      </div>
-    </motion.a>
   );
 }

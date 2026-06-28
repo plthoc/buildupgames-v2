@@ -54,7 +54,24 @@ export const siteConfig = {
     title: "Featured Experiences",
     subtitle: "No live experiences yet. Add your first Roblox game when you’re ready.",
   },
-  games: [] as Array<{
+  games: [
+    {
+      name: "SOLDIER BOY Supe",
+      studio: "BuildUp Games",
+      placeId: 127069371332903,
+      img: "",
+      url: "https://www.roblox.com/games/127069371332903/SOLDIER-BOY-Supe",
+      tag: "Action",
+    },
+    {
+      name: "Steal From Baddies",
+      studio: "BuildUp Games",
+      placeId: 98698592990928,
+      img: "",
+      url: "https://www.roblox.com/games/98698592990928/Steal-From-Baddies",
+      tag: "Stealth",
+    },
+  ] as Array<{
     name: string;
     studio: string;
     placeId: number;
@@ -125,6 +142,7 @@ export const siteConfig = {
   nav: [
     { label: "About", href: "#about" },
     { label: "Experiences", href: "#experiences" },
+    { label: "Games", href: "/games" },
     { label: "Team", href: "#team" },
     { label: "Contact", href: "#contact" },
   ],

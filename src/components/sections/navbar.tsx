@@ -6,12 +6,7 @@ import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { siteConfig } from "@/lib/site-config";
 
-const navItems = [
-  { label: "About", href: "#about" },
-  { label: "Experiences", href: "#experiences" },
-  { label: "Team", href: "#team" },
-  { label: "Contact", href: "#contact" },
-];
+const navItems = siteConfig.nav;
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
