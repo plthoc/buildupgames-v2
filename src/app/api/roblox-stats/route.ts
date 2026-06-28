@@ -42,7 +42,6 @@ async function fetchGameStats(universeId: number): Promise<{
   visits: number;
   name: string;
   favoritedCount: number;
-  thumbnail: string;
 } | null> {
   try {
     const url = `https://games.roblox.com/v1/games?universeIds=${universeId}`;
@@ -60,7 +59,6 @@ async function fetchGameStats(universeId: number): Promise<{
         playing: number;
         visits: number;
         favoritedCount: number;
-        thumbnailUrls: string[];
       }>;
     };
     const game = data?.data?.[0];
@@ -70,7 +68,6 @@ async function fetchGameStats(universeId: number): Promise<{
       visits: game.visits ?? 0,
       name: game.name ?? "",
       favoritedCount: game.favoritedCount ?? 0,
-      thumbnail: game.thumbnailUrls?.[0] ?? "",
     };
   } catch (e) {
     console.error("[roblox-stats] fetch failed", e);
@@ -78,27 +75,72 @@ async function fetchGameStats(universeId: number): Promise<{
   }
 }
 
+async function fetchGameThumbnails(universeIds: number[]): Promise<Map<number, string>> {
+  const out = new Map<number, string>();
+  if (universeIds.length === 0) return out;
+  try {
+    const url =
+      `https://thumbnails.roblox.com/v1/games/multiget/thumbnails` +
+      `?universeIds=${universeIds.join(",")}` +
+      `&countPerUniverse=1&defaults=true` +
+      `&size=768x432&format=Png&isCircular=false`;
+    const r = await fetch(url, {
+      headers: { Accept: "application/json" },
+      next: { revalidate: 60 * 60 * 6 }, // 6h — game thumbnails rarely change
+    });
+    if (!r.ok) {
+      console.error(`[roblox-stats] thumbnails returned ${r.status}`);
+      return out;
+    }
+    const data = (await r.json()) as {
+      data?: Array<{
+        universeId: number;
+        thumbnails?: Array<{ imageUrl?: string; state?: string }>;
+      }>;
+    };
+    for (const entry of data.data ?? []) {
+      const thumb = entry.thumbnails?.find((t) => t.imageUrl && t.state === "Completed");
+      if (thumb?.imageUrl) out.set(entry.universeId, thumb.imageUrl);
+    }
+  } catch (e) {
+    console.error("[roblox-stats] thumbnails fetch failed", e);
+  }
+  return out;
+}
+
 export async function GET() {
-  // If Roblox is unreachable, return cached/stub data immediately
   const results: GameStats[] = [];
+
+  // Step 1: collect (placeId, universeId, stats) for every configured game
+  const collected: Array<{
+    placeId: number;
+    universeId: number;
+    stats: { playing: number; visits: number; name: string; favoritedCount: number };
+  }> = [];
 
   for (const game of siteConfig.games) {
     if (!game.placeId) continue;
     const universeId = await placeToUniverseId(game.placeId);
     if (!universeId) continue;
     const stats = await fetchGameStats(universeId);
-    if (stats) {
-      results.push({
-        placeId: game.placeId,
-        universeId,
-        name: stats.name || game.name,
-        playing: stats.playing,
-        visits: stats.visits,
-        favoritedCount: stats.favoritedCount,
-        thumbnail: stats.thumbnail || "",
-        updatedAt: Date.now(),
-      });
-    }
+    if (stats) collected.push({ placeId: game.placeId, universeId, stats });
+  }
+
+  // Step 2: batch-fetch thumbnails for all universes in one call
+  const thumbMap = await fetchGameThumbnails(collected.map((c) => c.universeId));
+
+  // Step 3: build final results
+  for (const c of collected) {
+    results.push({
+      placeId: c.placeId,
+      universeId: c.universeId,
+      name: c.stats.name || siteConfig.games.find((g) => g.placeId === c.placeId)?.name || "",
+      playing: c.stats.playing,
+      visits: c.stats.visits,
+      favoritedCount: c.stats.favoritedCount,
+      thumbnail: thumbMap.get(c.universeId) ?? "",
+      updatedAt: Date.now(),
+    });
   }
 
   const total = results.reduce(
