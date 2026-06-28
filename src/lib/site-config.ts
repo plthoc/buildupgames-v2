@@ -52,7 +52,7 @@ export const siteConfig = {
   experiences: {
     eyebrow: "Experiences",
     title: "Featured Experiences",
-    subtitle: "No live experiences yet. Add your first Roblox game when you’re ready.",
+    subtitle: "",
   },
   games: [
     {

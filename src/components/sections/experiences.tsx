@@ -23,11 +23,13 @@ export function Experiences() {
             <span className="serif-italic">Featured</span> Experiences.
           </h2>
         </Reveal>
-        <Reveal delay={0.1}>
-          <p className="mt-4 max-w-2xl text-lg text-ink-500 text-pretty">
-            {siteConfig.experiences.subtitle}
-          </p>
-        </Reveal>
+        {siteConfig.experiences.subtitle && (
+          <Reveal delay={0.1}>
+            <p className="mt-4 max-w-2xl text-lg text-ink-500 text-pretty">
+              {siteConfig.experiences.subtitle}
+            </p>
+          </Reveal>
+        )}
 
         {hasGames ? (
           <div className="mt-16">
