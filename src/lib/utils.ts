@@ -13,6 +13,13 @@ export function formatNumber(n: number | string | null | undefined) {
   return num.toLocaleString();
 }
 
+/** Exact number with thousands separators — no rounding (e.g. 12,347). */
+export function formatExact(n: number | string | null | undefined) {
+  const num = typeof n === "string" ? Number(n) : n;
+  if (num === null || num === undefined || Number.isNaN(num)) return "0";
+  return Math.trunc(num).toLocaleString();
+}
+
 /**
  * Resolve a nav href for the current page.
  * - On the home page (`/`), in-page anchors (#about) work natively and get

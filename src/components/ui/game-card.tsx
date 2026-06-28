@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { formatNumber } from "@/lib/utils";
+import { formatExact } from "@/lib/utils";
 
 export type GameCardData = {
   placeId: number;
@@ -60,7 +60,7 @@ export function GameCard({
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          <span>{formatNumber(playing)}+ playing</span>
+          <span>{formatExact(playing)}+ playing</span>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export function GameCard({
           {name}
         </h3>
         <p className="mt-2 text-sm text-ink-500">
-          <span className="font-semibold text-ink-900">{formatNumber(visits)}+</span> visits
+          <span className="font-semibold text-ink-900">{formatExact(visits)}+</span> visits
         </p>
       </div>
     </motion.a>
