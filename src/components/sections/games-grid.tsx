@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { siteConfig } from "@/lib/site-config";
 import { GameCard, type GameCardData } from "@/components/ui/game-card";
 
@@ -64,17 +64,14 @@ export function GamesGrid({
       } as GameCardData;
     });
 
-    // Sort: highest CCU first; ties fall back to original config order.
     merged.sort((a, b) => {
       if (b.playing !== a.playing) return b.playing - a.playing;
-      // Stable tie-break: we keep the original config order via placeId position
       const ai = siteConfig.games.findIndex((g) => g.placeId === a.placeId);
       const bi = siteConfig.games.findIndex((g) => g.placeId === b.placeId);
       return ai - bi;
     });
 
-    const sorted = merged;
-    return typeof limit === "number" ? sorted.slice(0, limit) : sorted;
+    return typeof limit === "number" ? merged.slice(0, limit) : merged;
   }, [statsById, limit]);
 
   if (games.length === 0) return null;
@@ -91,29 +88,19 @@ export function GamesGrid({
         </div>
       )}
 
-      <motion.div
-        layout
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <AnimatePresence mode="popLayout">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <AnimatePresence mode="popLayout" initial={false}>
           {games.map((game, i) => (
-            <motion.div
+            <GameCard
               key={game.placeId}
-              layout
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{
-                layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-                opacity: { duration: 0.3 },
-                y: { duration: 0.4 },
-              }}
-            >
-              <GameCard game={game} priority={i < 3 && loaded} />
-            </motion.div>
+              game={game}
+              // only the first 3 cards (top of the grid) get eager loading
+              // after the API has loaded; otherwise all cards load lazily
+              eager={i < 3 && loaded}
+            />
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }

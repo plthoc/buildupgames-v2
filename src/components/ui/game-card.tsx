@@ -16,10 +16,10 @@ export type GameCardData = {
 
 export function GameCard({
   game,
-  priority = false,
+  eager = false,
 }: {
   game: GameCardData;
-  priority?: boolean;
+  eager?: boolean;
 }) {
   const { name, img, url, playing, visits } = game;
 
@@ -30,7 +30,10 @@ export function GameCard({
       target="_blank"
       rel="noopener noreferrer"
       whileHover={{ y: -4 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      transition={{
+        layout: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+        y: { duration: 0.35, ease: [0.22, 1, 0.36, 1] },
+      }}
       className="group block overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-card focus-ring"
     >
       {/* Thumbnail — plain <img> instead of next/image:
@@ -42,7 +45,7 @@ export function GameCard({
           <img
             src={img}
             alt={name}
-            loading={priority ? "eager" : "lazy"}
+            loading={eager ? "eager" : "lazy"}
             decoding="async"
             referrerPolicy="no-referrer"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
