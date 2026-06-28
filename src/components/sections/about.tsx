@@ -1,9 +1,73 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/motion-primitives";
+import { siteConfig } from "@/lib/site-config";
+import { formatNumber } from "@/lib/utils";
+
+type LiveStats = {
+  playing: number;
+  visits: number;
+  favoritedCount: number;
+};
 
 export function About() {
+  const [stats, setStats] = useState<LiveStats | null>(null);
+
+  // Pull live totals from the same endpoint the Hero / GamesGrid use
+  useEffect(() => {
+    let alive = true;
+    const poll = () => {
+      fetch("/api/roblox-stats")
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!alive || !data?.total || !data?.byGame) return;
+          const totalFavorites = Object.values<{
+            favoritedCount: number;
+          }>(data.byGame).reduce(
+            (acc, g) => acc + (g.favoritedCount ?? 0),
+            0,
+          );
+          setStats({
+            playing: data.total.playing,
+            visits: data.total.visits,
+            favoritedCount: totalFavorites,
+          });
+        })
+        .catch(() => {});
+    };
+    poll();
+    const interval = setInterval(poll, 30000);
+    return () => {
+      alive = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const pills: Array<{ value: string; label: string; sub: string }> = [
+    {
+      value: stats ? formatNumber(stats.playing) : "—",
+      label: "Live CCU",
+      sub: "across portfolio",
+    },
+    {
+      value: stats ? formatNumber(stats.visits) : "—",
+      label: "Visits",
+      sub: "lifetime",
+    },
+    {
+      value: stats ? formatNumber(stats.favoritedCount) : "—",
+      label: "Favorites",
+      sub: "from players",
+    },
+    {
+      value: String(siteConfig.games.length),
+      label: "Games",
+      sub: "in network",
+    },
+  ];
+
   return (
     <section
       id="about"
@@ -23,13 +87,6 @@ export function About() {
           {/* Left — image card (16:10, matches reference proportions) */}
           <Reveal className="lg:col-span-7">
             <div className="relative aspect-[16/10] overflow-hidden rounded-4xl bg-ink-900">
-              {/*
-                To use the image you uploaded in the chat, save the file to:
-                public/images/custom-about.png
-
-                Then this will load it from the public folder. If you prefer a
-                different filename/place, update the path below accordingly.
-              */}
               <Image
                 src="/images/IMG_0136.png"
                 alt="BuildUp"
@@ -65,18 +122,11 @@ export function About() {
             </Reveal>
 
             <RevealStagger className="mt-10 grid grid-cols-2 gap-3">
-              <RevealItem>
-                <PillStat value="0" label="Live CCU" sub="across portfolio" />
-              </RevealItem>
-              <RevealItem>
-                <PillStat value="0" label="Visits" sub="lifetime" />
-              </RevealItem>
-              <RevealItem>
-                <PillStat value="0" label="Favorites" sub="from players" />
-              </RevealItem>
-              <RevealItem>
-                <PillStat value="0" label="Studios" sub="in network" />
-              </RevealItem>
+              {pills.map((pill) => (
+                <RevealItem key={pill.label}>
+                  <PillStat {...pill} />
+                </RevealItem>
+              ))}
             </RevealStagger>
           </div>
         </div>
