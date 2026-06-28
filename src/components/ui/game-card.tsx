@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { formatNumber } from "@/lib/utils";
 
@@ -34,16 +33,19 @@ export function GameCard({
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className="group block overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-card focus-ring"
     >
-      {/* Thumbnail */}
+      {/* Thumbnail — plain <img> instead of next/image:
+          Roblox CDN requires browser-like headers and Vercel's optimizer
+          can fail silently. The image is already pre-sized by Roblox. */}
       <div className="relative aspect-[3/2] overflow-hidden bg-surface-50">
         {img ? (
-          <Image
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             src={img}
             alt={name}
-            fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            priority={priority}
-            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+            loading={priority ? "eager" : "lazy"}
+            decoding="async"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
           />
         ) : (
           <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-surface-50 to-line" />
