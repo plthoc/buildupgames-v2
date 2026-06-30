@@ -16,7 +16,7 @@ const POLL_INTERVAL_SEC = 60; // refresh live CCU every minute, wall-clock align
 
 export function About() {
   // Pull live totals from the same endpoint the Hero / GamesGrid use
-  const { data, secondsUntilNext } = usePollWithCountdown<{
+  const { data } = usePollWithCountdown<{
     total: { playing: number; visits: number };
     byGame: Record<number, { favoritedCount: number }>;
   }>(
@@ -103,13 +103,6 @@ export function About() {
             <Reveal delay={0.1}>
               <div className="flex items-center gap-3">
                 <div className="eyebrow text-ink-500">Our Approach</div>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-500">
-                  <span className="relative inline-flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  </span>
-                  Live · {secondsUntilNext}s
-                </span>
               </div>
             </Reveal>
             <Reveal delay={0.15}>

@@ -27,7 +27,7 @@ export function GamesGrid({
   showHeader?: boolean;
 }) {
   // Live CCU + thumbnails + titles — exact numbers, refreshed every minute.
-  const { data, secondsUntilNext } = usePollWithCountdown<{
+  const { data } = usePollWithCountdown<{
     byGame: Record<number, GameStats>;
   }>(
     async () => {
@@ -77,9 +77,7 @@ export function GamesGrid({
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          <span>
-            Live · sorted by current players · updates in {secondsUntilNext}s
-          </span>
+          <span>Live · sorted by current players</span>
         </div>
       )}
 
