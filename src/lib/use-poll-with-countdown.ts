@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * Polls `fetcher` once on mount, then again every `intervalSec` seconds on a
- * wall-clock-aligned cadence. The fetch countdown is internal-only — it is
- * not surfaced to the UI. The first fetch happens immediately; every
- * subsequent fetch lands on a global boundary (e.g. for `intervalSec = 60`,
- * fetches land at :00 of each minute in the user's local clock).
+ * wall-clock-aligned cadence. Exposes a `secondsUntilNext` value that is
+ * recomputed every second from the real clock — it cannot "reset on refresh":
+ * every render the value reflects actual time remaining until the next
+ * global boundary (e.g. for `intervalSec = 60`, seconds until the next `:00`).
  */
 export function usePollWithCountdown<T>(
   fetcher: () => Promise<T>,
@@ -16,6 +16,22 @@ export function usePollWithCountdown<T>(
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(null);
+
+  // Ticking "now" — recomputed every second. This is the source of truth for
+  // the displayed countdown. It is independent of when the tab mounted.
+  const [now, setNow] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(tick);
+  }, []);
+
+  // Seconds remaining until the next boundary at `intervalSec`. Because
+  // `now` ticks every second, this value stays in sync with real time even
+  // if the user keeps the tab open across multiple update cycles.
+  const secondsUntilNext = useMemo(() => {
+    const phase = Math.floor((now / 1000) % intervalSec);
+    return phase === 0 ? intervalSec : intervalSec - phase;
+  }, [now, intervalSec]);
 
   useEffect(() => {
     let alive = true;
@@ -36,9 +52,9 @@ export function usePollWithCountdown<T>(
     // Initial fetch on mount.
     run();
 
-    // Schedule subsequent fetches on wall-clock boundaries.
-    // Recursive setTimeout so each refresh lands exactly on the next
-    // boundary regardless of how long the previous fetch took.
+    // Schedule every subsequent fetch on a wall-clock boundary.
+    // Recursive setTimeout so each refresh lands exactly on the boundary,
+    // independent of how long the previous fetch took.
     const secondsToNextBoundary = () => {
       const phase = Math.floor((Date.now() / 1000) % intervalSec);
       return phase === 0 ? intervalSec : intervalSec - phase;
@@ -64,5 +80,5 @@ export function usePollWithCountdown<T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [intervalSec]);
 
-  return { data, error, lastUpdatedAt };
+  return { data, error, lastUpdatedAt, secondsUntilNext };
 }

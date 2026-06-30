@@ -14,7 +14,10 @@ export function Hero() {
   const opacity = useTransform(scrollY, [0, 400], [1, 0.6]);
 
   // Live CCU + visits — exact numbers, polled every minute on wall-clock boundaries.
-  const { data } = usePollWithCountdown<{ total: Stats; byGame: unknown }>(
+  const { data, secondsUntilNext } = usePollWithCountdown<{
+    total: Stats;
+    byGame: unknown;
+  }>(
     async () => {
       const r = await fetch("/api/roblox-stats", { cache: "no-store" });
       if (!r.ok) throw new Error("bad response");
@@ -89,7 +92,9 @@ export function Hero() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            <span>Live</span>
+            <span>
+              Live · next update in {secondsUntilNext}s
+            </span>
           </div>
           <div className="mt-3 grid max-w-sm grid-cols-2 gap-3">
             <StatCard value={formatNumber(stats?.playing ?? 0)} label="Total CCU" loading={stats === null} />
