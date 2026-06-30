@@ -45,8 +45,12 @@ async function fetchGameStats(universeId: number): Promise<{
 } | null> {
   try {
     const url = `https://games.roblox.com/v1/games?universeIds=${universeId}`;
+    // cache: "no-store" is critical on Vercel — Next.js's default fetch cache
+    // would otherwise persist the Roblox response across requests, making CCU
+    // stale everywhere (even though the route itself is force-dynamic).
     const r = await fetch(url, {
       headers: { Accept: "application/json" },
+      cache: "no-store",
     });
     if (!r.ok) {
       console.error(`[roblox-stats] universe ${universeId} returned ${r.status}`);
@@ -167,8 +171,13 @@ export async function GET() {
     { total, byGame },
     {
       headers: {
-        // Live CCU must be exact. No browser/CDN cache — every poll returns fresh data.
-        "Cache-Control": "no-store, must-revalidate",
+        // Live CCU must be exact. No browser/CDN/Next-data cache — every poll
+        // hits Roblox fresh. CDN-Cache-Control tells Vercel's edge explicitly.
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "CDN-Cache-Control": "no-store",
+        "Vercel-CDN-Cache-Control": "no-store",
+        Pragma: "no-cache",
+        Expires: "0",
       },
     },
   );
