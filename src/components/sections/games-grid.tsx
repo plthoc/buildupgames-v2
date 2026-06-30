@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
 import { siteConfig } from "@/lib/site-config";
 import { GameCard, type GameCardData } from "@/components/ui/game-card";
+import { usePollWithCountdown } from "@/lib/use-poll-with-countdown";
 
 type GameStats = {
   playing: number;
@@ -14,6 +15,8 @@ type GameStats = {
   updatedAt: number;
 };
 
+const POLL_INTERVAL_SEC = 60; // refresh live CCU every minute, wall-clock aligned
+
 export function GamesGrid({
   limit,
   showHeader = false,
@@ -23,30 +26,20 @@ export function GamesGrid({
   /** Show a tiny "live" indicator above the grid. */
   showHeader?: boolean;
 }) {
-  const [statsById, setStatsById] = useState<Record<number, GameStats>>({});
-  const [loaded, setLoaded] = useState(false);
+  // Live CCU + thumbnails + titles — exact numbers, refreshed every minute.
+  const { data, secondsUntilNext } = usePollWithCountdown<{
+    byGame: Record<number, GameStats>;
+  }>(
+    async () => {
+      const r = await fetch("/api/roblox-stats", { cache: "no-store" });
+      if (!r.ok) throw new Error("bad response");
+      return (await r.json()) as { byGame: Record<number, GameStats> };
+    },
+    POLL_INTERVAL_SEC,
+  );
 
-  // Poll every 30s for live CCU + thumbnails + titles
-  useEffect(() => {
-    let alive = true;
-    const poll = () => {
-      fetch("/api/roblox-stats")
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data) => {
-          if (alive && data?.byGame) {
-            setStatsById(data.byGame);
-            setLoaded(true);
-          }
-        })
-        .catch(() => {});
-    };
-    poll();
-    const interval = setInterval(poll, 5000);
-    return () => {
-      alive = false;
-      clearInterval(interval);
-    };
-  }, []);
+  const statsById = data?.byGame ?? {};
+  const loaded = data !== null;
 
   // Merge config + live stats, sort by CCU desc (stable fallback to config order)
   const games: GameCardData[] = useMemo(() => {
@@ -84,7 +77,9 @@ export function GamesGrid({
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
           </span>
-          <span>Live · sorted by current players</span>
+          <span>
+            Live · sorted by current players · updates in {secondsUntilNext}s
+          </span>
         </div>
       )}
 

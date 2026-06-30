@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Reveal, RevealStagger, RevealItem } from "@/components/ui/motion-primitives";
 import { siteConfig } from "@/lib/site-config";
 import { formatNumber } from "@/lib/utils";
+import { usePollWithCountdown } from "@/lib/use-poll-with-countdown";
 
 type LiveStats = {
   playing: number;
@@ -12,38 +12,38 @@ type LiveStats = {
   favoritedCount: number;
 };
 
-export function About() {
-  const [stats, setStats] = useState<LiveStats | null>(null);
+const POLL_INTERVAL_SEC = 60; // refresh live CCU every minute, wall-clock aligned
 
+export function About() {
   // Pull live totals from the same endpoint the Hero / GamesGrid use
-  useEffect(() => {
-    let alive = true;
-    const poll = () => {
-      fetch("/api/roblox-stats")
-        .then((r) => (r.ok ? r.json() : null))
-        .then((data) => {
-          if (!alive || !data?.total || !data?.byGame) return;
-          const totalFavorites = Object.values<{
-            favoritedCount: number;
-          }>(data.byGame).reduce(
-            (acc, g) => acc + (g.favoritedCount ?? 0),
-            0,
-          );
-          setStats({
-            playing: data.total.playing,
-            visits: data.total.visits,
-            favoritedCount: totalFavorites,
-          });
-        })
-        .catch(() => {});
-    };
-    poll();
-    const interval = setInterval(poll, 5000);
-    return () => {
-      alive = false;
-      clearInterval(interval);
-    };
-  }, []);
+  const { data, secondsUntilNext } = usePollWithCountdown<{
+    total: { playing: number; visits: number };
+    byGame: Record<number, { favoritedCount: number }>;
+  }>(
+    async () => {
+      const r = await fetch("/api/roblox-stats", { cache: "no-store" });
+      if (!r.ok) throw new Error("bad response");
+      return (await r.json()) as {
+        total: { playing: number; visits: number };
+        byGame: Record<number, { favoritedCount: number }>;
+      };
+    },
+    POLL_INTERVAL_SEC,
+  );
+
+  const stats: LiveStats | null = data
+    ? (() => {
+        const totalFavorites = Object.values(data.byGame).reduce(
+          (acc, g) => acc + (g.favoritedCount ?? 0),
+          0,
+        );
+        return {
+          playing: data.total.playing,
+          visits: data.total.visits,
+          favoritedCount: totalFavorites,
+        };
+      })()
+    : null;
 
   const pills: Array<{ value: string; label: string; sub: string }> = [
     {
@@ -101,7 +101,16 @@ export function About() {
           {/* Right — copy */}
           <div className="lg:col-span-5">
             <Reveal delay={0.1}>
-              <div className="eyebrow text-ink-500">Our Approach</div>
+              <div className="flex items-center gap-3">
+                <div className="eyebrow text-ink-500">Our Approach</div>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-ink-500">
+                  <span className="relative inline-flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  Live · {secondsUntilNext}s
+                </span>
+              </div>
             </Reveal>
             <Reveal delay={0.15}>
               <h3 className="mt-4 font-display text-3xl font-medium leading-[1.15] tracking-tight text-ink-900 text-balance md:text-4xl">

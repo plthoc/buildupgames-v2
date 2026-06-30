@@ -167,7 +167,8 @@ export async function GET() {
     { total, byGame },
     {
       headers: {
-        "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=120",
+        // Live CCU must be exact. No browser/CDN cache — every poll returns fresh data.
+        "Cache-Control": "no-store, must-revalidate",
       },
     },
   );
